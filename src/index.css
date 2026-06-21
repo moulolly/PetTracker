@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
 :root {
   --font-family: 'Outfit', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   --primary: #ff477e;
@@ -107,10 +109,6 @@ body {
 h1, h2, h3 {
   font-weight: 800;
   letter-spacing: -0.5px;
-}
-
-.hidden {
-  display: none !important;
 }
 
 /* Bottom Navigation */
@@ -224,83 +222,4 @@ h1, h2, h3 {
 }
 .pet-item.active .avatar-small {
   border: 3px solid var(--primary);
-}
-
-.avatar-large {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid white;
-  margin: 0 auto 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary);
-  color: white;
-  font-size: 2rem;
-}
-
-/* Modals */
-.modal-container {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 16px;
-}
-.modal-backdrop {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
-}
-.modal-content {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-}
-
-/* Timeline Items */
-.timeline-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  background: rgba(255,255,255,0.4);
-  padding: 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.timeline-item:active {
-  transform: scale(0.98);
-}
-.timeline-icon {
-  background: white;
-  padding: 8px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.cal-day {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-  background: rgba(255,255,255,0.4);
-  color: var(--text-dark);
-  transition: all 0.2s;
-}
-.cal-day.active {
-  background: var(--primary);
-  color: white;
-  font-weight: bold;
 }
