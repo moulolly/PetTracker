@@ -9,6 +9,7 @@ export default function Dashboard({ activePet }) {
   const [peeModalOpen, setPeeModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [editComment, setEditComment] = useState('');
+  const [editTime, setEditTime] = useState('');
 
   const todayStr = new Date().toLocaleDateString();
   const events = useLiveQuery(
@@ -31,7 +32,16 @@ export default function Dashboard({ activePet }) {
 
   const handleSaveEdit = async () => {
     if (!editingEvent) return;
-    await updateEvent(editingEvent.id, { comment: editComment });
+    
+    const [hours, minutes] = editTime.split(':');
+    const newDate = new Date(editingEvent.timestamp);
+    newDate.setHours(parseInt(hours, 10));
+    newDate.setMinutes(parseInt(minutes, 10));
+
+    await updateEvent(editingEvent.id, { 
+      comment: editComment,
+      timestamp: newDate.getTime()
+    });
     setEditingEvent(null);
   };
 
@@ -140,6 +150,17 @@ export default function Dashboard({ activePet }) {
               style={{minHeight: '80px', resize: 'vertical'}}
             />
 
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <label style={{fontWeight: 'bold', opacity: 0.8}}>Time:</label>
+              <input 
+                type="time" 
+                className="glass-input" 
+                value={editTime}
+                onChange={e => setEditTime(e.target.value)}
+                style={{flex: 1}}
+              />
+            </div>
+
             <div style={{display: 'flex', gap: '8px'}}>
               <button className="glass-button primary" style={{flex: 1}} onClick={handleSaveEdit}>Save</button>
               <button className="glass-button" style={{flex: 1}} onClick={() => setEditingEvent(null)}>Cancel</button>
@@ -156,7 +177,12 @@ export default function Dashboard({ activePet }) {
         <div style={{marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px'}}>
           {!events?.length && <p style={{textAlign: 'center', opacity: 0.6}}>No events logged today.</p>}
           {events?.map(event => (
-            <div key={event.id} style={{display: 'flex', alignItems: 'flex-start', gap: '12px', background: 'rgba(255,255,255,0.4)', padding: '12px', borderRadius: '12px', cursor: 'pointer'}} onClick={() => { setEditingEvent(event); setEditComment(event.comment || ''); }}>
+            <div key={event.id} style={{display: 'flex', alignItems: 'flex-start', gap: '12px', background: 'rgba(255,255,255,0.4)', padding: '12px', borderRadius: '12px', cursor: 'pointer'}} onClick={() => { 
+              setEditingEvent(event); 
+              setEditComment(event.comment || ''); 
+              const d = new Date(event.timestamp);
+              setEditTime(`${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`);
+            }}>
               <div style={{background: 'white', padding: '8px', borderRadius: '50%', color: event.type === 'poo' ? '#e17055' : event.type === 'pee' ? '#0984e3' : 'var(--primary)'}}>
                 {event.type === 'feeding' && <Cookie size={24} />}
                 {event.type === 'pee' && <Droplet size={24} />}
