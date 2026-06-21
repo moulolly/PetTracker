@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#ff477e">
+  <title>Pet Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="root">
+    <!-- Pet Switcher -->
+    <div id="pet-switcher-container" class="pet-switcher"></div>
+
+    <!-- Main Content Area -->
+    <div id="main-content" class="page-container">
+      
+      <!-- Welcome / Setup View -->
+      <div id="view-setup" class="view hidden">
+        <div class="glass-panel text-center animate-pop">
+          <h2>Welcome to PetTracker! 🐾</h2>
+          <p>Let's add your first pet to get started.</p>
+        </div>
+        <div class="glass-panel animate-pop" style="margin-top: 16px;">
+          <h3>Add a Pet</h3>
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+            <input type="text" id="setup-pet-name" placeholder="Pet's Name" class="glass-input" />
+            <button class="glass-button primary" id="btn-setup-add-pet">Add Pet</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard View -->
+      <div id="view-dashboard" class="view hidden">
+        <div class="glass-panel text-center animate-pop">
+          <div id="dash-pet-pic" class="avatar-large"></div>
+          <h2 id="dash-pet-name">Name</h2>
+          <p style="opacity: 0.8">How are they doing today?</p>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+          <button class="glass-button primary" style="flex: 1; flex-direction: column;" onclick="app.openModal('modal-feeding')">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/></svg>
+            Feeding
+          </button>
+          <button class="glass-button primary" style="flex: 1; flex-direction: column; background: #0984e3" onclick="app.openModal('modal-pee')">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+            Pee
+          </button>
+          <button class="glass-button primary" style="flex: 1; flex-direction: column; background: #e17055" onclick="app.openModal('modal-poo')">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Poo
+          </button>
+        </div>
+
+        <div class="glass-panel" style="flex: 1; margin-top: 16px;">
+          <h3>Today's Timeline</h3>
+          <div id="dash-timeline" style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;"></div>
+        </div>
+      </div>
+
+      <!-- Calendar View -->
+      <div id="view-calendar" class="view hidden">
+        <div class="glass-panel" style="display: flex; align-items: center; justify-content: space-between;">
+          <button class="glass-button" style="padding: 8px" onclick="app.changeMonth(-1)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <h2 id="cal-month-year" style="margin: 0">Month Year</h2>
+          <button class="glass-button" style="padding: 8px" onclick="app.changeMonth(1)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        <div class="glass-panel" style="margin-top: 16px;">
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; font-weight: bold; margin-bottom: 8px; opacity: 0.6;">
+            <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+          </div>
+          <div id="cal-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;"></div>
+        </div>
+
+        <div class="glass-panel" style="flex: 1; margin-top: 16px;">
+          <h3 id="cal-selected-date">History</h3>
+          <div id="cal-timeline" style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;"></div>
+        </div>
+      </div>
+
+      <!-- Settings View -->
+      <div id="view-settings" class="view hidden">
+        <div class="glass-panel animate-pop">
+          <h3>Add a Pet</h3>
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+            <input type="text" id="settings-pet-name" placeholder="Pet's Name" class="glass-input" />
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img id="settings-pet-pic-preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: none;" />
+              <label class="glass-button" style="flex: 1; font-size: 0.9rem; padding: 12px;">
+                Choose Picture
+                <input type="file" id="settings-pet-pic" accept="image/*" style="display: none;" />
+              </label>
+            </div>
+            <button class="glass-button primary" onclick="app.addPetFromSettings()">Add Pet</button>
+          </div>
+        </div>
+
+        <div class="glass-panel animate-pop" style="margin-top: 16px;">
+          <h3>Manage Pets</h3>
+          <div id="settings-pet-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;"></div>
+        </div>
+
+        <div class="glass-panel animate-pop" style="margin-top: 16px;">
+          <h3>Data & Backup</h3>
+          <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button class="glass-button" style="flex: 1; flex-direction: column; font-size: 0.9rem;" onclick="app.exportData()">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export
+            </button>
+            <label class="glass-button" style="flex: 1; flex-direction: column; font-size: 0.9rem;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Import
+              <input type="file" id="settings-import-file" accept=".json" style="display: none;" />
+            </label>
+          </div>
+          <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 12px; text-align: center;">
+            Data is stored locally. Export regularly to avoid data loss.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav" class="bottom-nav hidden">
+      <div class="nav-item" data-view="dashboard" onclick="app.switchView('dashboard')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-item" data-view="calendar" onclick="app.switchView('calendar')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Calendar</span>
+      </div>
+      <div class="nav-item" data-view="settings" onclick="app.switchView('settings')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </div>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modal-container" class="modal-container hidden">
+      <div class="modal-backdrop" onclick="app.closeModal()"></div>
+      
+      <!-- Feeding Modal -->
+      <div id="modal-feeding" class="glass-panel modal-content hidden animate-pop">
+        <h3 style="text-align: center;">How much did they eat?</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <button class="glass-button" style="flex: 1 1 30%; flex-direction: column; padding: 8px;" onclick="app.addEvent('feeding', 'Finished')">Finished</button>
+          <button class="glass-button" style="flex: 1 1 30%; flex-direction: column; padding: 8px;" onclick="app.addEvent('feeding', 'Half')">Half</button>
+          <button class="glass-button" style="flex: 1 1 30%; flex-direction: column; padding: 8px;" onclick="app.addEvent('feeding', 'Nibbled')">Nibbled</button>
+        </div>
+        <button class="glass-button" onclick="app.closeModal()">Cancel</button>
+      </div>
+
+      <!-- Pee Modal -->
+      <div id="modal-pee" class="glass-panel modal-content hidden animate-pop">
+        <h3 style="text-align: center;">How big was it?</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <button class="glass-button" style="flex: 1 1 40%; flex-direction: column; padding: 8px;" onclick="app.addEvent('pee', 'Large')">Large</button>
+          <button class="glass-button" style="flex: 1 1 40%; flex-direction: column; padding: 8px;" onclick="app.addEvent('pee', 'Medium')">Medium</button>
+          <button class="glass-button" style="flex: 1 1 40%; flex-direction: column; padding: 8px;" onclick="app.addEvent('pee', 'Small')">Small</button>
+          <button class="glass-button" style="flex: 1 1 40%; flex-direction: column; padding: 8px;" onclick="app.addEvent('pee', 'Spot')">Spot</button>
+        </div>
+        <button class="glass-button" onclick="app.closeModal()">Cancel</button>
+      </div>
+
+      <!-- Poo Modal -->
+      <div id="modal-poo" class="glass-panel modal-content hidden animate-pop">
+        <h3 style="text-align: center;">How was it?</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <button class="glass-button" style="flex: 1 1 40%; flex-direction: column; padding: 8px;" onclick="app.addEvent('poo', 'Hard')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8e44ad" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Hard
+          </button>
+          <button class="glass-button" style="flex: 1 1 40%; flex-direction: column; padding: 8px;" onclick="app.addEvent('poo', 'Firm')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00b894" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Firm
+          </button>
+          <button class="glass-button" style="flex: 1 1 40%; flex-direction: column; padding: 8px;" onclick="app.addEvent('poo', 'Soft')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fdcb6e" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Soft
+          </button>
+          <button class="glass-button" style="flex: 1 1 40%; flex-direction: column; padding: 8px;" onclick="app.addEvent('poo', 'Runny')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d63031" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Runny
+          </button>
+        </div>
+        <button class="glass-button" onclick="app.closeModal()">Cancel</button>
+      </div>
+
+      <!-- Edit Event Modal -->
+      <div id="modal-edit" class="glass-panel modal-content hidden animate-pop">
+        <h3 id="edit-modal-title" style="text-align: center; text-transform: capitalize;">Details</h3>
+        <textarea id="edit-modal-comment" class="glass-input" placeholder="Add a comment..." style="min-height: 80px; resize: vertical;"></textarea>
+        <div style="display: flex; gap: 8px;">
+          <button class="glass-button primary" style="flex: 1;" onclick="app.saveEventEdit()">Save</button>
+          <button class="glass-button" style="flex: 1;" onclick="app.closeModal()">Cancel</button>
+        </div>
+        <button class="glass-button" style="color: #d63031; border: 1px solid rgba(214,48,49,0.3);" onclick="app.deleteCurrentEvent()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          Delete Event
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
