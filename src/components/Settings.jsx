@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { Download, Upload, Trash2 } from 'lucide-react';
-import { db, addPet, deletePet } from '../db';
+import { Download, Upload, Trash2, Edit2 } from 'lucide-react';
+import { db, addPet, updatePet, deletePet } from '../db';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 export default function Settings({ forceSetup }) {
   const [newPetName, setNewPetName] = useState('');
   const [newPetPic, setNewPetPic] = useState(null);
+  const [editingPet, setEditingPet] = useState(null);
+  const [editPetName, setEditPetName] = useState('');
+  const [editPetPic, setEditPetPic] = useState(null);
 
   const pets = useLiveQuery(() => db.pets.toArray());
 
@@ -15,6 +18,17 @@ export default function Settings({ forceSetup }) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setNewPetPic(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditPetPic(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -35,6 +49,15 @@ export default function Settings({ forceSetup }) {
     if (confirm('Are you sure you want to delete this pet and all their data?')) {
       await deletePet(id);
     }
+  };
+
+  const handleSaveEditPet = async () => {
+    if (!editingPet || !editPetName.trim()) return;
+    await updatePet(editingPet.id, {
+      name: editPetName.trim(),
+      picture: editPetPic
+    });
+    setEditingPet(null);
   };
 
   const handleExport = async () => {
@@ -140,9 +163,18 @@ export default function Settings({ forceSetup }) {
                 )}
                 <span style={{fontWeight: 'bold'}}>{pet.name}</span>
               </div>
-              <button className="glass-button" style={{padding: '8px', color: '#d63031', border: 'none', background: 'transparent'}} onClick={() => handleDeletePet(pet.id)}>
-                <Trash2 size={20} />
-              </button>
+              <div style={{display: 'flex', gap: '8px'}}>
+                <button className="glass-button" style={{padding: '8px', border: 'none', background: 'transparent'}} onClick={() => {
+                  setEditingPet(pet);
+                  setEditPetName(pet.name);
+                  setEditPetPic(pet.picture);
+                }}>
+                  <Edit2 size={20} />
+                </button>
+                <button className="glass-button" style={{padding: '8px', color: '#d63031', border: 'none', background: 'transparent'}} onClick={() => handleDeletePet(pet.id)}>
+                  <Trash2 size={20} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -160,6 +192,45 @@ export default function Settings({ forceSetup }) {
           </label>
         </div>
       </div>
+
+      {editingPet && (
+        <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px'}}>
+          <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)'}} onClick={() => setEditingPet(null)} />
+          <div className="glass-panel animate-pop" style={{background: 'var(--glass-bg)', display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '400px', boxShadow: '0 10px 40px rgba(0,0,0,0.3)', position: 'relative'}}>
+            <h3 style={{textAlign: 'center'}}>Edit Pet</h3>
+            
+            <input 
+              type="text" 
+              placeholder="Pet's Name" 
+              className="glass-input" 
+              value={editPetName}
+              onChange={e => setEditPetName(e.target.value)}
+            />
+            
+            <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+              {editPetPic ? (
+                <img src={editPetPic} alt="Preview" style={{width: 60, height: 60, borderRadius: '50%', objectFit: 'cover'}} />
+              ) : (
+                <div style={{width: 60, height: 60, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold'}}>{editPetName?.[0]}</div>
+              )}
+              <label className="glass-button" style={{flex: 1, fontSize: '0.9rem', padding: '12px', textAlign: 'center'}}>
+                Change Picture
+                <input type="file" accept="image/*" style={{display: 'none'}} onChange={handleEditImageUpload} />
+              </label>
+              {editPetPic && (
+                <button className="glass-button" style={{color: '#d63031', padding: '12px'}} onClick={() => setEditPetPic(null)}>
+                  <Trash2 size={20} />
+                </button>
+              )}
+            </div>
+
+            <div style={{display: 'flex', gap: '8px'}}>
+              <button className="glass-button primary" style={{flex: 1}} onClick={handleSaveEditPet}>Save</button>
+              <button className="glass-button" style={{flex: 1}} onClick={() => setEditingPet(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
