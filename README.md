@@ -1,16 +1,37 @@
-# React + Vite
+# Funky Pet Tracker 🐾
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A vibrant, mobile-friendly web application for tracking your pets' daily habits. This app was built using **Vanilla HTML, CSS, and JavaScript** with no build tools or local servers required. It's designed to be simple, fast, and completely offline-capable.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Track Multiple Pets**: Add multiple pets, each with their own profile picture and timeline.
+- **Log Daily Habits**:
+  - **Feeding**: Log how much your pet ate (Finished, Half, Nibbled).
+  - **Peeing**: Log the size (Large, Medium, Small, Spot).
+  - **Pooing**: Log the consistency (Hard, Firm, Soft, Runny).
+- **Edit & Delete**: Tap any logged event in the timeline to add comments or delete it.
+- **Calendar View**: Look back at your pet's history on any given day.
+- **Local Storage**: All data is saved directly in your browser using IndexedDB. No external database is needed!
+- **Data Export & Import**: Export your data to a JSON file to create backups or transfer to another device.
 
-## React Compiler
+## How to Run
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Because this app uses zero build tools, running it is incredibly simple:
 
-## Expanding the ESLint configuration
+1. Clone or download this repository.
+2. Open the folder on your computer.
+3. Double-click the `index.html` file to open it in your browser.
+4. That's it!
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+> **Note**: For security reasons, some browsers (like Firefox) may block database access when running files directly via the `file:///` protocol. If you experience this, the app will fall back to "in-memory" mode (data resets on refresh). To fix this, use Google Chrome, or serve the folder using a basic local web server (e.g., `npx serve`).
+
+## Tech Stack
+
+- **HTML5**: Single `index.html` file acting as a Single Page Application.
+- **CSS3**: Vanilla CSS in `styles.css` utilizing modern glassmorphism UI/UX design.
+- **JavaScript (ES6)**: Vanilla JS in `app.js` using raw DOM manipulation and `IndexedDB` for data storage. No frameworks or npm dependencies!
+- **Icons**: Embedded SVG vectors.
+
+## Contributing
+
+Feel free to fork the repository and submit pull requests if you want to add new features or fix bugs!
